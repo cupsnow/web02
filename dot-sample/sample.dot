@@ -1,0 +1,11 @@
+digraph p2s_state {
+	reset[label="reset\n(wait for command)"]
+	dispatch[label="dispatch\n(parse command)"]
+	cmd_def[label="cmd_def\n(command default/unknown)"]
+	resp_def[label="resp_def\n(send response)"]
+	
+	reset/* wait for command */ -> dispatch[label="readable\n(receive command)"]
+	dispatch/* parse command */ -> cmd_def[label="passthrough\n(simple/unknown command)"]
+	cmd_def/* command default/unknown */ -> resp_def[label="writable"]
+	resp_def/* send response */ -> reset[label="passthrough"]
+}
