@@ -1,12 +1,12 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 import PropTypes from 'prop-types';
-import './base.css';
-import './func.less';
+import '../base.css';
+import '../func.less';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
-import * as Ctrl from './ctrl';
+import * as Ctrl from '../ctrl';
 
 class DatePickerEntry extends React.Component {
   constructor(props) {
@@ -29,7 +29,7 @@ DatePickerEntry.propTypes = {
   value: PropTypes.string
 };
 
-export class App extends React.Component {
+export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -56,20 +56,18 @@ export class App extends React.Component {
   render() {
     return (<div>
       {this.state.dateMoment.toDate().toString()}
+      <h2>react-datepicker</h2>
       <DatePicker className='title'
         dateFormat='YYYY/MM/DD'
         selected={this.state.dateMoment}
         onChange={(val) => this.setUIState('dateMoment', val)}/>
+      <h2>react-datepicker customInput</h2>
       <DatePicker customInput={<DatePickerEntry/>} dateFormat='YYYY/MM/DD'
         selected={this.state.dateMoment}
         onChange={(val) => this.setUIState('dateMoment', val)}/>
+      <h2>HTML5 input type=&quot;date&quot;</h2>
       <input type='date' value={this.state.dateInput}
         onChange={(ev) => this.setUIState('dateInput', ev.target.value)}/>
-
     </div>);
   }
 }
-
-var holder = document.createElement('div');
-document.body.appendChild(holder);
-ReactDOM.render((<App/>), holder);

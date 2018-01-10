@@ -1,3 +1,16 @@
 .display_none {
   display: none;
 }
+
+.flat {
+  box-sizing: border-box;
+  border: 0;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+.date_entry {
+  width: 100px;
+  background-color: #b19eff
+}
