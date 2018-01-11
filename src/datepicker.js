@@ -1,12 +1,11 @@
-import ReactDOM from 'react-dom';
 import React from 'react';
 import PropTypes from 'prop-types';
-import '../base.css';
-import '../func.less';
+import './base.css';
+import './func.less';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
-import * as Ctrl from '../ctrl';
+import * as Ctrl from './ctrl';
 
 class DatePickerEntry extends React.Component {
   constructor(props) {

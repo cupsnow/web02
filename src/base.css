@@ -14,3 +14,10 @@
   width: 100px;
   background-color: #b19eff
 }
+
+.test_img {
+  position: relative;
+  width: 128px;
+  height: 128px;
+  background-image: url(/img/wiki_drawing.png);
+}

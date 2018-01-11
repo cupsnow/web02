@@ -5,11 +5,11 @@ var extractCSS = new ExtractTextPlugin('style-bundle.css');
 module.exports = {
   entry: {
     app: ['./src/app.js'],
-    demo: ['./src/demo/index.js']
+    index: ['./src/index.js']
   },
   output: {
     path: path.join(__dirname, '/dist'),
-    filename: '[name]-bundle.js'
+    filename: '[name]-bundle.js',
   },
 
   module: {
