@@ -20,12 +20,14 @@
   width: 128px;
   height: 128px;
   background-image: url(/img/wiki_drawing.png);
+  background-repeat: no-repeat;
   border: 1px dashed #b8a247;
 }
 .test_img2 {
   position: relative;
   width: 128px;
   height: 128px;
-  background-image: url(/img/ic_bug_report_black_48dp.png);
+  background-image: url(./img/ic_bug_report_black_48dp.png);
+  background-repeat: no-repeat;
   border: 1px dashed #97b847;
 }

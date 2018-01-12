@@ -1,7 +1,11 @@
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
 
 var extractCSS = new ExtractTextPlugin('style-bundle.css');
+
 module.exports = {
   entry: {
     app: ['./src/app_entrance.js'],
@@ -9,7 +13,7 @@ module.exports = {
   },
 
   output: {
-    path: path.join(__dirname, '/dist'),
+    path: path.resolve(__dirname, 'dist'),
     filename: '[name]-bundle.js'
   },
 
@@ -66,5 +70,12 @@ module.exports = {
       }
     ]
   },
-  plugins: [extractCSS]
+  plugins: [
+    new CleanWebpackPlugin(['dist']),
+    new HtmlWebpackPlugin({
+      title: 'Web2'
+    }),
+    extractCSS,
+    new ManifestPlugin()
+  ]
 };

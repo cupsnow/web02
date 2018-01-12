@@ -1,6 +1,7 @@
 import React from 'react';
 import './base.css';
 import './func.less';
+import './img/ic_bug_report_black_48dp.png';
 
 export default class App extends React.Component {
   constructor(props) {
