@@ -4,12 +4,13 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 var extractCSS = new ExtractTextPlugin('style-bundle.css');
 module.exports = {
   entry: {
-    app: ['./src/app.js'],
+    app: ['./src/app_entrance.js'],
     index: ['./src/index.js']
   },
+
   output: {
     path: path.join(__dirname, '/dist'),
-    filename: '[name]-bundle.js',
+    filename: '[name]-bundle.js'
   },
 
   module: {
@@ -21,7 +22,7 @@ module.exports = {
           {
             loader: 'babel-loader',
             options: {
-              presets:['env'],
+              presets:['env', 'stage-1'],
               plugins: ['transform-react-jsx']
             }
           }

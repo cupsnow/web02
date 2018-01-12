@@ -16,14 +16,14 @@ export class Index extends React.Component {
       <div>
         <h2>Portal</h2>
         <ul>
-          <li><Link to='/index.html'>Home</Link></li>
+          <li><Link to='/'>Home</Link></li>
           <li><Link to='/App'>App</Link></li>
           <li><Link to='/Datepicker'>Demo Datepicker</Link></li>
         </ul>
         <hr/>
         <Switch>
-          <Route path='/App' component={App}/>
-          <Route path='/Datepicker' component={Datepicker}/>
+          <Route path='/App/' component={App}/>
+          <Route path='/Datepicker/' component={Datepicker}/>
         </Switch>
       </div>
     </Router>);
