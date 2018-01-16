@@ -1,33 +1,3 @@
-.display_none {
-  display: none;
-}
-
-.flat {
-  box-sizing: border-box;
-  border: 0;
-  background: none;
-  padding: 0;
-  margin: 0;
-}
-
-.date_entry {
-  width: 100px;
-  background-color: #b19eff
-}
-
-.test_img {
-  position: relative;
-  width: 128px;
-  height: 128px;
-  background-image: url(/img/wiki_drawing.png);
-  background-repeat: no-repeat;
-  border: 1px dashed #b8a247;
-}
-.test_img2 {
-  position: relative;
-  width: 128px;
-  height: 128px;
-  background-image: url(./img/ic_bug_report_black_48dp.png);
-  background-repeat: no-repeat;
-  border: 1px dashed #97b847;
+body {
+  background-color: #f1e9ff;
 }

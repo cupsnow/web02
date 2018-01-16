@@ -1,14 +1,18 @@
 const path = require('path');
+const merge = require('webpack-merge');
+const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const googleapi = require('./src/googleapi');
 
 var extractCSS = new ExtractTextPlugin('style-bundle.css');
 
-module.exports = {
+let cfg = {
   entry: {
-    app: ['./src/app_entrance.js'],
+    // app: ['./src/app_entrance.js'],
     index: ['./src/index.js']
   },
 
@@ -60,7 +64,7 @@ module.exports = {
         })
       },
       {
-        test: /\.(jpe?g|png|svg)$/,
+        test: /\.(jpe?g|png|svg|gif)$/,
         use: [
           {
             loader: 'url-loader',
@@ -71,11 +75,45 @@ module.exports = {
     ]
   },
   plugins: [
-    new CleanWebpackPlugin(['dist']),
+    new CleanWebpackPlugin(
+      ['dist']
+    ),
     new HtmlWebpackPlugin({
-      title: 'Web2'
+      title: 'Web2',
+      template: 'src/index-template.html',
+      googlePlaceApiKey: googleapi.googlePlaceApiKey
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'common'
     }),
     extractCSS,
     new ManifestPlugin()
-  ]
+  ],
 };
+
+if (process.env.NODE_ENV === 'production') {
+  cfg = merge(cfg, {
+    plugins: [
+      new UglifyJSPlugin(),
+      new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify('production')
+      })
+    ]
+  });
+} else {
+  cfg = merge(cfg, {
+    devtool: 'source-map',
+    devServer: {
+      contentBase: cfg.output.path,
+      watchContentBase: true,
+      host: '0.0.0.0',
+      hot: true
+    },
+    plugins: [
+      new webpack.NamedModulesPlugin(),
+      new webpack.HotModuleReplacementPlugin()
+    ]
+  });
+}
+
+module.exports = cfg;
