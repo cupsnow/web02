@@ -14,10 +14,17 @@ export default class Locpicker extends React.Component {
       latitude: 0,
       placeProvider: '',
       place: [],
+      getPlaceResult: ''
     };
     this.getLoc = this.getLoc.bind(this);
     this.getPlace = this.getPlace.bind(this);
     this.getPlace2 = this.getPlace2.bind(this);
+  }
+
+  componentDidMount() {
+    if (this.props.googlePlaceApiKey && this.googlePlaceApiKeyInput) {
+      this.googlePlaceApiKeyInput.value = this.props.googlePlaceApiKey;
+    }
   }
 
   getLoc() {
@@ -33,11 +40,16 @@ export default class Locpicker extends React.Component {
   }
 
   getPlace(radius) {
+    if (!this.state.latitude || !this.state.longitude) {
+      this.setState({...this.state,
+        getPlaceResult: 'No geolocation'
+      });
+      return;
+    }
     radius = this.radiusInput ? parseInt(this.radiusInput.value) : undefined;
-    if (!this.state.latitude || !this.state.longitude) return;
     var url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json`;
     var params = [];
-    params.push(`key=${this.props.googlePlaceApiKey}`);
+    params.push(`key=${this.googlePlaceApiKeyInput.value}`);
     params.push(`location=${this.state.latitude},${this.state.longitude}`);
     if (radius && radius > 0) {
       params.push(`radius=${radius}`);
@@ -53,16 +65,28 @@ export default class Locpicker extends React.Component {
       mode: 'no-cors'
     }).then(resp => {
       if (resp.ok) return resp.json();
+      if (resp.type) {
+        this.setState({...this.state,
+          getPlaceResult: resp.type
+        });
+      }
     }).then(jobj => {
+      if (!jobj) return;
       this.setState({...this.state,
         placeProvider: 'GApiPlace',
-        place: jobj
+        place: jobj,
+        getPlaceResult: 'Ok'
       });
     });
   }
 
   getPlace2(radius) {
-    if (!this.state.latitude || !this.state.longitude) return;
+    if (!this.state.latitude || !this.state.longitude) {
+      this.setState({...this.state,
+        getPlaceResult: 'No geolocation'
+      });
+      return;
+    }
     radius = 500; // this.radiusInput ? parseInt(this.radiusInput.value) : undefined;
     var pyrmont = new google.maps.LatLng(this.state.latitude, this.state.longitude);
     var map = new google.maps.Map(document.getElementById('map'), {
@@ -76,18 +100,23 @@ export default class Locpicker extends React.Component {
     };
     var service = new google.maps.places.PlacesService(map);
     service.nearbySearch(request, (result, status) => {
-      if (status == google.maps.places.PlacesServiceStatus.OK) {
+      if (status != google.maps.places.PlacesServiceStatus.OK) {
         this.setState({...this.state,
-          placeProvider: 'GMapApiPlace',
-          place: result
+          getPlaceResult: 'failed'
         });
+        return;
       }
+      this.setState({...this.state,
+        placeProvider: 'GMapApiPlace',
+        place: result,
+        getPlaceResult: 'Ok'
+      });
     });
   }
 
   render() {
     var geoLocation = (this.state.latitude && this.state.longitude ?
-      `longitude: ${this.state.longitude}, latitude: ${this.state.latitude}` :
+      `Longitude: ${this.state.longitude}, Latitude: ${this.state.latitude}` :
       'N/A');
     var place = [];
     try {
@@ -111,16 +140,28 @@ export default class Locpicker extends React.Component {
     }
 
     return (<div>
-      <button onClick={this.getLoc}>Get geolocation</button>
-      {geoLocation}
-      <br/>
-      <label>
-        By radius: <input type='number' ref={elm => this.radiusInput = elm}/>
-      </label>
-      <button onClick={this.getPlace2}>Get place mark</button>
-      <br/>
-      {place}
-      <div id="map"/>
+      <div className='dashed'>
+        Geo Location: {geoLocation}<br/>
+        <button onClick={this.getLoc}>Get geolocation</button>
+      </div>
+      <div className='dashed'>
+        <label>
+          Googke place api key:
+          <input type='text' ref={elm => this.googlePlaceApiKeyInput = elm}/>
+        </label>
+        <br/>
+        <label>
+          Get place mark by radius:
+          <input type='number' ref={elm => this.radiusInput = elm}/>
+        </label>
+        <br/>
+        <button onClick={this.getPlace}>Google place web service</button>
+        <button onClick={this.getPlace2}>Google map js client api</button>
+        {this.state.getPlaceResult}
+        <br/>
+        {place}
+        <div id="map"/>
+      </div>
     </div>);
   }
 }
