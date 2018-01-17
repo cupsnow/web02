@@ -12,7 +12,6 @@ var extractCSS = new ExtractTextPlugin('style-bundle.css');
 
 let cfg = {
   entry: {
-    // app: ['./src/app_entrance.js'],
     index: ['./src/index.js']
   },
 
@@ -75,9 +74,6 @@ let cfg = {
     ]
   },
   plugins: [
-    new CleanWebpackPlugin(
-      ['dist']
-    ),
     new HtmlWebpackPlugin({
       title: 'Web2',
       template: 'src/index-template.html',
@@ -94,6 +90,9 @@ let cfg = {
 if (process.env.NODE_ENV === 'production') {
   cfg = merge(cfg, {
     plugins: [
+      new CleanWebpackPlugin(
+        ['dist']
+      ),
       new UglifyJSPlugin(),
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify('production')
@@ -107,7 +106,8 @@ if (process.env.NODE_ENV === 'production') {
       contentBase: cfg.output.path,
       watchContentBase: true,
       host: '0.0.0.0',
-      hot: true
+      hot: true,
+      https: true
     },
     plugins: [
       new webpack.NamedModulesPlugin(),
