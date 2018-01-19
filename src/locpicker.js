@@ -100,7 +100,7 @@ export default class Locpicker extends React.Component {
     };
     var service = new google.maps.places.PlacesService(map);
     service.nearbySearch(request, (result, status) => {
-      if (status != google.maps.places.PlacesServiceStatus.OK) {
+      if (status !== google.maps.places.PlacesServiceStatus.OK) {
         this.setState({...this.state,
           getPlaceResult: 'failed'
         });
