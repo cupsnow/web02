@@ -12,7 +12,7 @@ var extractCSS = new ExtractTextPlugin('style-bundle.css');
 
 let cfg = {
   entry: {
-    index: ['./src/index.js']
+    index: ['./src/index.jsx']
   },
 
   output: {
@@ -107,7 +107,7 @@ if (process.env.NODE_ENV === 'production') {
       watchContentBase: true,
       host: '0.0.0.0',
       hot: true,
-      https: true
+      // https: true
     },
     plugins: [
       new webpack.NamedModulesPlugin(),
