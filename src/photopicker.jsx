@@ -7,8 +7,10 @@ export default class Photopicker extends React.Component {
     super(props);
     this.state = {
       files: [],
+      picTaken: null
     };
     this.selectFile = this.selectFile.bind(this);
+    this.takePicture = this.takePicture.bind(this);
   }
 
   selectFile(ev) {
@@ -26,6 +28,25 @@ export default class Photopicker extends React.Component {
     }
   }
 
+  isSupportTakePicture() {
+    return window && window.isCordovaApp && navigator && navigator.camera;
+  }
+
+  takePicture(/* ev */) {
+    if (!this.isSupportTakePicture()) return;
+    var camera = navigator.camera;
+    camera.getPicture((data /*, path */) => {
+      this.setState({
+        ...this.state,
+        picTaken: data
+      });
+    }, (msg) => {
+      console.log('failed: ', msg);
+    }, {
+      // sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+    });
+  }
+
   render() {
     var fileInputStyle = {
     };
@@ -41,7 +62,19 @@ export default class Photopicker extends React.Component {
       // };
       holderClassName += ' img_input_holder_empty';
     }
+    var takePicture = (null);
+    if (this.isSupportTakePicture()) {
+      var picTaken = (null);
+      if (this.state.picTaken) {
+        picTaken = (<img src={`data:image/jpeg;base64,${this.state.picTaken}`}/>);
+      }
+      takePicture = (<div>
+        <button onClick={this.takePicture}>take Picture</button>
+        {picTaken}
+      </div>);
+    }
     return (<div>
+      {takePicture}
       <div className={holderClassName}>
         <label style={fileInputStyle}>
           <input className='display_none' type='file'

@@ -7,6 +7,20 @@ import Photopicker from './photopicker.jsx';
 import Locpicker from './locpicker.jsx';
 import App from './app.jsx';
 
+class Submenu extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
+
+  render() {
+    return (<Router>
+
+    </Router>);
+  }
+}
+
 export class Index extends React.Component {
   constructor(props) {
     super(props);
@@ -38,54 +52,36 @@ export class Index extends React.Component {
           <div className='item'>
             <Link to='/Locpicker'>Locpicker</Link>
           </div>
+          <div className='sep'>|</div>
+          <div className='item'>
+            <Link to='/Submenu'>Submenu</Link>
+          </div>
         </div>
-        <Switch>
-          <Route path='/App/' component={App}/>
-          <Route path='/Photopicker/' component={Photopicker}/>
-          <Route path='/Datepicker/' component={Datepicker}/>
-          <Route path='/Locpicker/' component={Locpicker}/>
-        </Switch>
+        <div>
+          <Route path='/App' component={App}/>
+          <Route path='/Photopicker' component={Photopicker}/>
+          <Route path='/Datepicker' component={Datepicker}/>
+          <Route path='/Locpicker' component={Locpicker}/>
+          <Route path='/Submenu' component={Submenu}/>
+        </div>
       </div>
     </Router>);
   }
 }
 
-export class Playground extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-  }
-
-  render() {
-    return (<div>
-      <div className='nav'>
-        <span className='title'>Demo</span>
-        <div className='item'>
-          <Link to='/'>Home</Link>
-        </div>
-        <div className='sep'>|</div>
-        <div className='item'>
-          <Link to='/App'>App</Link>
-        </div>
-        <div className='sep'>|</div>
-        <div className='item'>
-          <Link to='/Photopicker'>Photopicker</Link>
-        </div>
-        <div className='sep'>|</div>
-        <div className='item'>
-          <Link to='/Datepicker'>Datepicker</Link>
-        </div>
-        <div className='sep'>|</div>
-        <div className='item'>
-          <Link to='/Locpicker'>Locpicker</Link>
-        </div>
-      </div>
-      <div>{this.props.children}</div>
-    </div>);
-  }
+function launch() {
+  var holder = document.createElement('div');
+  document.body.appendChild(holder);
+  ReactDOM.render((<Index/>), holder);
 }
 
-var holder = document.createElement('div');
-document.body.appendChild(holder);
-ReactDOM.render((<Index/>), holder);
+console.log('isCordovaApp: ', window.isCordovaApp);
+
+if (window.isCordovaApp) {
+  document.addEventListener('deviceready', () => {
+    console.log('deviceready');
+    launch();
+  }, false);
+} else {
+  launch();
+}
