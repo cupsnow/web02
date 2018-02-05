@@ -16,3 +16,7 @@ export function parseDateInput(dateInput) {
 export function formatDateInput(date) {
   return `${formatNum(date.getFullYear(), 4)}-${formatNum(date.getMonth() + 1, 2)}-${formatNum(date.getDate(), 2)}`;
 }
+
+export function isCordovaApp() {
+  return window && window.isCordovaApp;
+}
