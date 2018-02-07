@@ -50,6 +50,8 @@ export default class App extends React.Component {
   }
 
   render() {
+    console.log('this: %o\n  state: %o', this, this.state);
+
     return (<div>
       <label>
         Api key: <input type='text' ref={elm => this.pushNotiKey = elm}

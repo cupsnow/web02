@@ -10,8 +10,14 @@ export default class Locpicker extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      locProvider: '',
       longitude: 0,
       latitude: 0,
+
+      geoCodeProvider: '',
+      geoCode: undefined,
+      getGeocodeResult: '',
+
       placeProvider: '',
       place: [],
       getPlaceResult: ''
@@ -19,23 +25,116 @@ export default class Locpicker extends React.Component {
     this.getLoc = this.getLoc.bind(this);
     this.getPlace = this.getPlace.bind(this);
     this.getPlace2 = this.getPlace2.bind(this);
+    this.getGeocode = this.getGeocode.bind(this);
   }
 
   componentDidMount() {
     if (this.props.googlePlaceApiKey && this.googlePlaceApiKeyInput) {
       this.googlePlaceApiKeyInput.value = this.props.googlePlaceApiKey;
     }
+    if (this.props.googleGeocodeApiKey && this.googleGeocodeApiKeyInput) {
+      this.googleGeocodeApiKeyInput.value = this.props.googleGeocodeApiKey;
+    }
+  }
+
+  getLoc1(onLongLati) {
+    var callResult = (coords) => {
+      let longitude, latitude;
+      if (coords && coords.length >= 2) {
+        longitude = coords[0];
+        latitude = coords[1];
+      } else if (coords && coords.longitude !== undefined &&
+          coords.latitude !== undefined) {
+        longitude = coords.longitude;
+        latitude = coords.latitude;
+      }
+      if (onLongLati) onLongLati(longitude, latitude);
+    };
+    if (!navigator.geolocation) {
+      callResult();
+      return;
+    }
+    navigator.geolocation.getCurrentPosition((pos) => {
+      callResult(pos.coords);
+    }, (/* err */) => {
+      // console.log('geolocation: ', err);
+      callResult();
+    });
   }
 
   getLoc() {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition((pos) => {
-      console.log(`pos: `, pos);
+    this.getLoc1((long, lati) => {
+      if (long !== undefined && lati !== undefined) {
+        console.log(`longitude: ${long}, latitude: ${lati}`);
+        this.setState({...this.state,
+          locProvider: 'browser',
+          longitude: long,
+          latitude: lati,
+        });
+      }
+    });
+  }
+
+  decGeo1(longitude, latitude, onGeoCode) {
+    const googleGeocodeUrl = "https://maps.googleapis.com/maps/api/geocode/json";
+    const googleGeocodeLang = "zh-TW";
+
+    var callResult = function(geoCode) {
+      if (onGeoCode) onGeoCode(geoCode);
+    };
+    var url = googleGeocodeUrl;
+    var queries = [];
+    queries.push(`latlng=${latitude},${longitude}`);
+    queries.push(`key=${this.googleGeocodeApiKeyInput.value}`);
+    queries.push(`language=${googleGeocodeLang}`);
+    queries.push('result_type=postal_code');
+    var aggregate = url;
+    if (queries && queries.length > 0) aggregate += `?${queries.join('&')}`;
+    fetch(aggregate, {
+      method: 'GET',
+      mode: 'cors'
+    }).then(resp => {
+      console.log('geoDecode\n  url: %o\n  resp: %o', aggregate, resp);
+      if (resp.ok) return resp.json();
+      callResult();
+    }).then(jobj => {
+      console.log('geoDecode\n  url: %o\n  val: %o', aggregate, jobj);
+      try {
+        let geoCode = {};
+        jobj.results[0].address_components.map((comp, compIdx) => {
+          comp.types.map((type, typeIdx) => {
+            if (type.includes('postal_code')) geoCode.postal_code = comp.long_name;
+            else if (type.includes('administrative_area_level_1')) geoCode.administrative_area_level_1 = comp.long_name;
+            else if (type.includes('administrative_area_level_2')) geoCode.administrative_area_level_2 = comp.long_name;
+            else if (type.includes('administrative_area_level_3')) geoCode.administrative_area_level_3 = comp.long_name;
+            else if (type.includes('country')) geoCode.country = comp.long_name;
+          });
+        });
+        geoCode.geoDecodeProvider = 'GMapApiGeocode';
+        console.log('geoCode: %o', geoCode);
+        callResult(geoCode);
+        return;
+      } catch (e) {
+        console.log('geoCode: ', e.message);
+      }
+      callResult();
+    });
+  }
+
+  getGeocode() {
+    if (!this.state.latitude || !this.state.longitude) {
       this.setState({...this.state,
-        longitude: pos.coords.longitude,
-        latitude: pos.coords.latitude,
+        getGeocodeResult: 'No geolocation'
       });
-      // this.getPlace();
+      return;
+    }
+    this.decGeo1(this.state.longitude, this.state.latitude, (geoCode) => {
+      this.setState({...this.state,
+        geoCodeProvider: 'googleGeocode',
+        geoCode: geoCode,
+        getGeocodeResult: geoCode ? `Ok` : 'failed'
+      });
+      return;
     });
   }
 
@@ -48,17 +147,17 @@ export default class Locpicker extends React.Component {
     }
     radius = this.radiusInput ? parseInt(this.radiusInput.value) : undefined;
     var url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json`;
-    var params = [];
-    params.push(`key=${this.googlePlaceApiKeyInput.value}`);
-    params.push(`location=${this.state.latitude},${this.state.longitude}`);
+    var queries = [];
+    queries.push(`key=${this.googlePlaceApiKeyInput.value}`);
+    queries.push(`location=${this.state.latitude},${this.state.longitude}`);
     if (radius && radius > 0) {
-      params.push(`radius=${radius}`);
+      queries.push(`radius=${radius}`);
     } else if (radius === 0) {
-      params.push(`rankby=distance`);
-      params.push(`type=restaurant`);
+      queries.push(`rankby=distance`);
+      queries.push(`type=restaurant`);
     }
     var aggregate = url;
-    if (params && params.length > 0) aggregate += `?${params.join('&')}`;
+    if (queries && queries.length > 0) aggregate += `?${queries.join('&')}`;
     console.log('getPlace: ', aggregate);
     fetch(aggregate, {
       method: 'GET',
@@ -118,6 +217,7 @@ export default class Locpicker extends React.Component {
     var geoLocation = (this.state.latitude && this.state.longitude ?
       `Longitude: ${this.state.longitude}, Latitude: ${this.state.latitude}` :
       'N/A');
+
     var place = [];
     try {
       if (this.state.placeProvider === 'GApiPlace') {
@@ -139,10 +239,50 @@ export default class Locpicker extends React.Component {
       console.log(`${e.message}`);
     }
 
+    var geoCode = (null);
+    try {
+      let geoCodeArr = [];
+      if (this.state.geoCode.country) {
+        geoCodeArr.push(['Country', this.state.geoCode.country]);
+      }
+      if (this.state.geoCode.postal_code) {
+        geoCodeArr.push(['Postal code', this.state.geoCode.postal_code]);
+      }
+      if (this.state.geoCode.administrative_area_level_1) {
+        geoCodeArr.push(['Administrative area level1', this.state.geoCode.administrative_area_level_1]);
+      }
+      if (this.state.geoCode.administrative_area_level_2) {
+        geoCodeArr.push(['Administrative area level2', this.state.geoCode.administrative_area_level_2]);
+      }
+      if (this.state.geoCode.administrative_area_level_3) {
+        geoCodeArr.push(['Administrative area level3', this.state.geoCode.administrative_area_level_3]);
+      }
+      if (geoCodeArr.length > 0) {
+        geoCode = geoCodeArr.map((item, idx) => {
+          return (<div key={idx}>
+            {item[0]}: {item[1]} <br/>
+          </div>);
+        });
+      }
+    } catch (e) {
+      console.log(`${e.message}`);
+    }
+
     return (<div>
       <div className='dashed'>
         Geo Location: {geoLocation}<br/>
         <button onClick={this.getLoc}>Get geolocation</button>
+      </div>
+      <div className='dashed'>
+        <label>
+          Googke geocode api key:
+          <input type='text' ref={elm => this.googleGeocodeApiKeyInput = elm}/>
+        </label>
+        <br/>
+        <button onClick={this.getGeocode}>Google Geocode</button>
+        {this.state.getGeocodeResult}
+        <br/>
+        {geoCode}
       </div>
       <div className='dashed'>
         <label>
@@ -167,9 +307,11 @@ export default class Locpicker extends React.Component {
 }
 
 Locpicker.defaultProps = {
-  googlePlaceApiKey: googleapi.googlePlaceApiKey
+  googlePlaceApiKey: googleapi.googlePlaceApiKey,
+  googleGeocodeApiKey: googleapi.googleGeocodeApiKey
 };
 
 Locpicker.propTypes = {
-  googlePlaceApiKey: PropTypes.string
+  googlePlaceApiKey: PropTypes.string,
+  googleGeocodeApiKey: PropTypes.string
 };
