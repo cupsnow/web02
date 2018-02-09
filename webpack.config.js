@@ -12,7 +12,7 @@ var extractCSS = new ExtractTextPlugin('style-bundle.css');
 
 let cfg = {
   entry: {
-    index: ['./src/index.jsx']
+    index: ['./src/app.jsx']
   },
 
   output: {
@@ -67,7 +67,7 @@ let cfg = {
         use: [
           {
             loader: 'url-loader',
-            options: {limit: 8000}
+            options: {limit: 2000}
           }
         ]
       }
@@ -83,7 +83,9 @@ let cfg = {
       name: 'common'
     }),
     extractCSS,
-    new ManifestPlugin()
+    new ManifestPlugin({
+      fileName: 'manifest.json',
+    })
   ],
 };
 
@@ -91,7 +93,7 @@ if (process.env.NODE_ENV === 'production') {
   cfg = merge(cfg, {
     plugins: [
       new CleanWebpackPlugin(
-        ['dist']
+        ['www']
       ),
       new UglifyJSPlugin(),
       new webpack.DefinePlugin({

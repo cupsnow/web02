@@ -50,7 +50,7 @@ export default class Photopicker extends React.Component {
   render() {
     var fileInputStyle = {
     };
-    var holderClassName = 'flat img_input_holder';
+    var holderClassName = 'flat img-input-holder';
     if (this.state.files && this.state.files.length > 0) {
       console.log('img: ', this.state.files[0]);
       fileInputStyle = {
@@ -60,7 +60,7 @@ export default class Photopicker extends React.Component {
       // fileInputStyle = {
       //   backgroundImage: `url(${ic_photo_library_black_48dp})`,
       // };
-      holderClassName += ' img_input_holder_empty';
+      holderClassName += ' img-input-holder-empty';
     }
     var takePicture = (null);
     if (this.isSupportTakePicture()) {
@@ -77,7 +77,7 @@ export default class Photopicker extends React.Component {
       {takePicture}
       <div className={holderClassName}>
         <label style={fileInputStyle}>
-          <input className='display_none' type='file'
+          <input className='display-none' type='file'
             accept='image/*' multiple
             onChange={this.selectFile}/>
         </label>

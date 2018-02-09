@@ -1,38 +1,4 @@
-body {
-  margin: 0;
-  padding: 0;
-}
-
-.display_none {
-  display: none;
-}
-
-.nav {
-  background-color: #e7e7e7;
-  padding: 10px;
-  list-style-type: none;
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-  align-content: center;
-  // justify-content: flex-start;
-  :link,:visited {
-    text-decoration: none;
-    &:hover {
-      background-color: #9acf44;
-    }
-  }
-  .title {
-    margin: 10px;
-    font-size: 2rem;
-  }
-  .item {
-    padding: 5px;
-  }
-  .sep {
-    .item();
-  }
-}
+@grp-space: 10px;
 
 .inline {
   box-sizing: border-box;
@@ -40,7 +6,12 @@ body {
   display: inline-flex;
 }
 
-.no_repeat {
+.img-fit {
+  object-fit: contain;
+  background-size: contain;
+}
+
+.bg-center {
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -56,29 +27,66 @@ body {
 
 .dashed {
   border: 1px dashed #c9c9c9;
-  border-radius: 5px;
-  padding: 5px;
+  border-radius: @grp-space / 2;
+  padding: @grp-space / 2;
 }
 
-.date_entry {
+.display-none {
+  display: none;
+}
+
+.nav {
+  background-color: #e7e7e7;
+  list-style-type: none;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  align-content: center;
+  // justify-content: flex-start;
+  :link,:visited {
+    text-decoration: none;
+    &:hover {
+      background-color: #9acf44;
+    }
+  }
+  .title {
+    margin: @grp-space;
+    font-size: 2rem;
+    flex-flow: row nowrap;
+    align-items: center;
+    align-content: center;
+    .thumb {
+      width: 64px;
+      height: 64px;
+    }
+  }
+  .item {
+    padding: @grp-space / 2;
+  }
+  .sep {
+    .item();
+  }
+}
+
+.date-entry {
   width: 100px;
   background-color: #b19eff;
 }
 
-.img_input_holder_empty {
+.img-input-holder-empty {
   border: 1px dashed #b8a247;
   background-color: #dbdbdb;
   background-image: url(img/ic_photo_library_black_48dp.png);
 }
 
-.img_input_holder {
-  .no_repeat;
+.img-input-holder {
+  .bg-center;
   .inline;
   width: 128px;
   height: 128px;
   background-size: contain;
   label {
-    .no_repeat;
+    .bg-center;
     .inline;
     width: 99.9%;
     height: 99.9%;
@@ -90,4 +98,9 @@ body {
   div {
 
   }
+}
+
+body {
+  margin: 0;
+  padding: 0;
 }

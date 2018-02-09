@@ -1,85 +1,110 @@
+import ReactDOM from 'react-dom';
 import React from 'react';
-import PropTypes from 'prop-types';
-import './base.css';
-import './func.less';
-import * as googleapi from './googleapi';
+// import PropTypes from 'prop-types';
+import {HashRouter as Router /*, Switch */, Route, Link as Link} from 'react-router-dom';
+import Datepicker from './datepicker.jsx';
+import Photopicker from './photopicker.jsx';
+import Locpicker from './locpicker.jsx';
+import NotiTest from './notitest.jsx';
+import * as Ctrl from './ctrl';
+import imgWikiDrawing from './img/wiki_drawing.png';
 
-export default class App extends React.Component {
+class Submenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      pushNotiResult: ''
     };
-    this.onPushNoti = this.onPushNoti.bind(this);
-  }
-
-  onPushNoti(ev) {
-    var url = `https://gcm-http.googleapis.com/gcm/send`;
-    var body = {
-      to: this.pushNotiRegId.value,
-      data: {
-        title: this.pushNotiTitle.value,
-        message: this.pushNotiMsg.value,
-        detail: `detail: ${this.pushNotiMsg.value}`
-      }
-    };
-    var headers = new Headers();
-    headers.append("Authorization", `key=${this.pushNotiKey.value}`);
-    headers.append("Content-Type", 'application/json');
-    var aggregate = url;
-    fetch(aggregate, {
-      method: 'POST',
-      mode: 'cors',
-      headers: headers,
-      body: JSON.stringify(body)
-    }).then(resp => {
-      console.log('onPushNoti resp: ', resp);
-      if (resp.ok) return resp.json();
-      if (resp.type) {
-        this.setState({...this.state,
-          pushNotiResult: resp.type
-        });
-      }
-    }).then(jobj => {
-      console.log('onPushNoti jobj: ', jobj);
-      if (!jobj) return;
-      this.setState({...this.state,
-        pushNotiResult: 'Ok'
-      });
-    });
   }
 
   render() {
-    console.log('this: %o\n  state: %o', this, this.state);
-
-    return (<div>
-      <label>
-        Api key: <input type='text' ref={elm => this.pushNotiKey = elm}
-          defaultValue={this.props.pushNotiKey}/>
-      </label>
-      <label>
-        Registration token: <input type='text'
-          ref={elm => this.pushNotiRegId = elm}
-          defaultValue={'fhriTirpyDg:APA91bFZSc58XFdCL_yaz-6nayaglZJGM6fh3tsTEttQ1RqbYkdd0iZI4RpDXROvhAORZrXc-BY0KfSCfjLFKZK5TC4qcmftShOdjtzfOnBckD7Jm-JaItjlQ9p_EO6gyByorcK3V4T_'}/>
-      </label>
-      <label>
-        Title: <input type='text' ref={elm => this.pushNotiTitle = elm}
-          defaultValue='title'/>
-      </label>
-      <label>
-        Message: <input type='text' ref={elm => this.pushNotiMsg = elm}
-          defaultValue={`message/${new Date()}`}/>
-      </label>
-      <button onClick={this.onPushNoti}>Send</button>
-      {this.state.pushNotiResult}
-    </div>);
+    return (<Router>
+      <div>
+        <div className='item'>
+          <Link to='/NotiTest'>Push notification</Link>
+        </div>
+      </div>
+    </Router>);
   }
 }
 
-App.defaultProps = {
-  pushNotiKey: googleapi.googlePushNotiApiKey
-};
+class Home extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
 
-App.propTypes = {
-  pushNotiKey: PropTypes.string
-};
+    };
+  }
+
+  render() {
+    return (null);
+  }
+}
+
+export class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+
+    };
+  }
+
+  render() {
+    return (<Router>
+      <div>
+        <div className='nav'>
+          <div className='title inline'>
+            <img className='thumb' src={imgWikiDrawing}/>
+            <span>Demo</span>
+          </div>
+          <div className='item'>
+            <Link to='/'>Home</Link>
+          </div>
+          <div className='sep'>|</div>
+          <div className='item'>
+            <Link to='/Photopicker'>Photopicker</Link>
+          </div>
+          <div className='sep'>|</div>
+          <div className='item'>
+            <Link to='/Datepicker'>Datepicker</Link>
+          </div>
+          <div className='sep'>|</div>
+          <div className='item'>
+            <Link to='/Locpicker'>Locpicker</Link>
+          </div>
+          <div className='sep'>|</div>
+          <div className='item'>
+            <Link to='/NotiTest'>Push notification</Link>
+          </div>
+          <div className='sep'>|</div>
+          <div className='item'>
+            <Link to='/Submenu'>Submenu</Link>
+          </div>
+        </div>
+        <div>
+          <Route path='/' exact component={Home}/>
+          <Route path='/Photopicker' component={Photopicker}/>
+          <Route path='/Datepicker' component={Datepicker}/>
+          <Route path='/Locpicker' component={Locpicker}/>
+          <Route path='/NotiTest' component={NotiTest}/>
+          <Route path='/Submenu' component={Submenu}/>
+        </div>
+      </div>
+    </Router>);
+  }
+}
+
+function launch() {
+  var holder = document.createElement('div');
+  document.body.appendChild(holder);
+  ReactDOM.render((<App/>), holder);
+}
+
+// console.log('window.isCordovaApp: ', window.isCordovaApp);
+if (Ctrl.isCordovaApp()) {
+  document.addEventListener('deviceready', () => {
+    console.log('deviceready');
+    launch();
+  }, false);
+} else {
+  launch();
+}

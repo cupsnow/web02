@@ -16,7 +16,7 @@ class DatePickerEntry extends React.Component {
   }
 
   render() {
-    return <button className='flat date_entry'
+    return <button className='flat date-entry'
       onClick={this.props.onClick}>
       {this.props.value}
     </button>;
