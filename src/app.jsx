@@ -8,87 +8,8 @@ import Locpicker from './locpicker.jsx';
 import NotiTest from './notitest.jsx';
 import * as Ctrl from './ctrl';
 import imgWikiDrawing from './img/wiki_drawing.png';
-
-class Misc1 extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-  }
-
-  render() {
-    console.log('Misc1.this: ', this);
-    return (<div>
-      <div className='nav'>
-        <div className='item'>
-          <Link to={`${this.props.match.url}/Misc11`}>Misc11</Link>
-        </div>
-        <div className='sep'>|</div>
-        <div className='item'>
-          <Link to={`${this.props.match.url}/Misc12`}>Misc12</Link>
-        </div>
-      </div>
-      Routed here and pass props from: {this.props.from}
-      <div>
-        <Route path={`${this.props.match.path}/:misc1Page`} render={(props) => {
-          console.log('Misc1 page: ', props);
-          return (<div style={{
-            backgroundColor: '#0041be',
-            color: '#cfffc9'
-          }}>
-            Request Page: {props.match.params.misc1Page}
-          </div>);
-        }}/>
-      </div>
-    </div>);
-  }
-}
-
-Misc1.propTypes = {
-  match: PropTypes.object,
-  from: PropTypes.string
-};
-
-class Misc extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-  }
-
-  render() {
-    console.log('Misc.this: ', this);
-    return (<div>
-      <div className='nav'>
-        <div className='item'>
-          <Link to={`${this.props.match.url}/Misc1`}>Misc1</Link>
-        </div>
-        <div className='sep'>|</div>
-        <div className='item'>
-          <Link to={`${this.props.match.url}/Misc2`}>Misc2</Link>
-        </div>
-      </div>
-      <div>
-        <Route path={`${this.props.match.path}/:miscPage`} render={(props) => {
-          console.log('Misc page: ', props);
-          return (<div style={{
-            backgroundColor: '#0041be',
-            color: '#cfffc9'
-          }}>
-            Request Page: {props.match.params.miscPage}
-          </div>);
-        }}/>
-        <Route path={`${this.props.match.path}/Misc1`} render={(props) => {
-          return (<Misc1 {...props} from={this.props.match.path}/>);
-        }}/>
-      </div>
-    </div>);
-  }
-}
-
-Misc.propTypes = {
-  match: PropTypes.object
-};
+import Rout from './rout.jsx';
+import Bx from './bx.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -125,7 +46,11 @@ class App extends React.Component {
         </div>
         <div className='sep'>|</div>
         <div className='item'>
-          <Link to='/Misc'>Miscellaneous</Link>
+          <Link to='/Rout'>React Router</Link>
+        </div>
+        <div className='sep'>|</div>
+        <div className='item'>
+          <Link to='/Bx'>Bluemix</Link>
         </div>
       </div>
       <div>
@@ -142,7 +67,8 @@ class App extends React.Component {
         <Route path='/Datepicker' component={Datepicker}/>
         <Route path='/Locpicker' component={Locpicker}/>
         <Route path='/NotiTest' component={NotiTest}/>
-        <Route path='/Misc' component={Misc}/>
+        <Route path='/Rout' component={Rout}/>
+        <Route path='/Bx' component={Bx}/>
       </div>
     </div>);
   }

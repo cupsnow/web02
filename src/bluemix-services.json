@@ -1,0 +1,13 @@
+{
+  "VCAP_SERVICES": {
+    "cloudantNoSQLDB": [{
+      "credentials": {
+        "username": "cb646e03-af25-4aca-95df-206b4afd634b-bluemix",
+        "password": "ece0bc2f5f16ed4d8c2203db7558ddd9caf8512c7693d9f5dfe504b56bf9506d",
+        "host": "cb646e03-af25-4aca-95df-206b4afd634b-bluemix.cloudant.com",
+        "port": 443,
+        "url": "https://cb646e03-af25-4aca-95df-206b4afd634b-bluemix:ece0bc2f5f16ed4d8c2203db7558ddd9caf8512c7693d9f5dfe504b56bf9506d@cb646e03-af25-4aca-95df-206b4afd634b-bluemix.cloudant.com"
+      }
+    }]
+  }
+}
