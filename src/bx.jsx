@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Route, Link as Link} from 'react-router-dom';
-import * as BxInfo from './bluemix-services.json';
+import * as Base64 from 'base64-js';
+import {TextEncoder /* , TextDecoder */} from 'text-encoding';
 import * as Ctrl from './ctrl.js';
+import * as BxInfo from './bluemix-services.json';
 
-class Cloudant extends React.Component {
+class Cloudant0 extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -12,14 +14,13 @@ class Cloudant extends React.Component {
     };
   }
 
-  componentWillMount() {
-    // this.cloudantCout('GET');
-  }
+  // componentWillMount() {
+  //   this.cloudantCout('GET');
+  // }
 
   cloudant(method, res, queries, body) {
     var cred = BxInfo.VCAP_SERVICES.cloudantNoSQLDB[0].credentials;
-    var userpass = `${cred.username}:${cred.password}`;
-    var b64Userpass = Ctrl.b64Encode(Ctrl.str2ByteArray(userpass));
+    var b64Userpass = Base64.fromByteArray(new TextEncoder('utf-8').encode(`${cred.username}:${cred.password}`));
     var headers = new Headers();
     headers.append('Authorization', `Basic ${b64Userpass}`);
     var sche = ((cred.url.startsWith('https') || cred.port === 443) ? 'https' : 'http');
@@ -87,8 +88,6 @@ class Cloudant extends React.Component {
         <button onClick={this.cloudantSimple.bind(this)}>Process</button>
       </div>
       <br/>
-      <button onClick={this.cloudantCout.bind(this, 'GET', undefined, undefined, undefined)}>Dummy</button>
-      <button onClick={this.cloudantCout.bind(this, 'GET', '_all_dbs', undefined, undefined)}><cite>_all_dbs</cite></button>
       <div>
         {this.state.cout[0]}
       </div>
@@ -96,11 +95,56 @@ class Cloudant extends React.Component {
   }
 }
 
-Cloudant.propTypes = {
+Cloudant0.propTypes = {
   match: PropTypes.object
 };
 
-export default class Menu extends React.Component {
+class Cloudant1 extends Ctrl.CtxComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      cout: []
+    };
+    this.testPromise = this.testPromise.bind(this);
+  }
+
+  testPromise() {
+    this.props.appCtx.acc = (typeof this.props.appCtx.acc) !== 'undefined' ?
+      this.props.appCtx.acc + 1 : 0;
+    console.log("appCtx.acc: ", this.props.appCtx.acc);
+
+    new Promise((res, rej) => {
+      console.log('testPromise running');
+      res();
+    }).then(() => {
+      console.log('testPromise then1 throw');
+      throw "testPromise then1 throw";
+    }).then(() => {
+      console.log('testPromise then2 running');
+    }).catch((e) => {
+      console.log('testPromise final cache: ', e);
+    });
+  }
+
+  render() {
+    return (<div>
+      <div>
+        <button onClick={this.testPromise}>Test Promise</button>
+      </div>
+      <br/>
+      <div>
+        {this.state.cout[0]}
+      </div>
+    </div>);
+  }
+}
+
+Cloudant1.propTypes = {
+  ...Ctrl.CtxComponent.propTypes,
+  match: PropTypes.object
+};
+
+export default class Menu extends Ctrl.CtxComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -111,12 +155,12 @@ export default class Menu extends React.Component {
     return (<div>
       <div className='nav'>
         <div className='item'>
-          <Link to={`${this.props.match.url}/Cloudant`}>Cloudant</Link>
+          <Link to={`${this.props.match.url}/Cloudant0`}>Cloudant0</Link>
         </div>
-        {/* <div className='sep'>|</div>
+        <div className='sep'>|</div>
         <div className='item'>
-          <Link to={`${this.props.match.url}/Misc2`}>Misc2</Link>
-        </div> */}
+          <Link to={`${this.props.match.url}/Cloudant1`}>Cloudant1</Link>
+        </div>
       </div>
       <div>
         <Route path={`${this.props.match.path}/:bxPage`} render={(props) => {
@@ -128,8 +172,12 @@ export default class Menu extends React.Component {
             Request Page: {props.match.params.bxPage}
           </div>);
         }}/>
-        <Route path={`${this.props.match.path}/Cloudant`} render={(props) => {
-          return (<Cloudant {...props} from={this.props.match.path}/>);
+        <Route path={`${this.props.match.path}/Cloudant0`} render={(props) => {
+          return (<Cloudant0 {...props} from={this.props.match.path}/>);
+        }}/>
+        <Route path={`${this.props.match.path}/Cloudant1`} render={(/* props */) => {
+          console.log('this: ', this);
+          return (<Cloudant1 appCtx={this.props.appCtx} from={this.props.match.path}/>);
         }}/>
       </div>
     </div>);
@@ -137,5 +185,6 @@ export default class Menu extends React.Component {
 }
 
 Menu.propTypes = {
-  match: PropTypes.object
+  ...Ctrl.CtxComponent.propTypes,
+  // match: PropTypes.object,
 };

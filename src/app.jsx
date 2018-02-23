@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import {HashRouter as Router /*, Switch */, Route, Link as Link} from 'react-router-dom';
 import Datepicker from './datepicker.jsx';
 import Photopicker from './photopicker.jsx';
@@ -10,6 +10,7 @@ import * as Ctrl from './ctrl';
 import imgWikiDrawing from './img/wiki_drawing.png';
 import Rout from './rout.jsx';
 import Bx from './bx.jsx';
+import * as MQTT from 'mqtt';
 
 class App extends React.Component {
   constructor(props) {
@@ -17,10 +18,29 @@ class App extends React.Component {
     this.state = {
 
     };
+
+    this.appCtx = {
+      mqtt: {
+        client: MQTT.connect('http://test.mosquitto.org'),
+        dispatch(topic, msg) {
+          console.log(`topic: ${topic}, msg: ${msg.toString()}`);
+        }
+      }
+    };
+  }
+
+  componentWillMount() {
+    this.appCtx.mqtt.client.on('connect', () => {
+      console.log('mqtt connected');
+      this.appCtx.mqtt.client.subscribe('joelai/web2');
+    });
+    this.appCtx.mqtt.client.on('message', (topic, msg) => {
+      this.appCtx.mqtt.dispatch(topic, msg);
+    });
   }
 
   render() {
-    console.log('App.this: ', this);
+    if (this.state.busy) return (<div>BUSY...</div>);
     return (<div>
       <div className='nav'>
         <div className='title inline'>
@@ -54,6 +74,9 @@ class App extends React.Component {
         </div>
       </div>
       <div>
+        {`Recevied notification: ${this.state.noti || '<Empty>'}`}
+      </div>
+      <div>
         <Route path={`/:demoPage`} render={(props) => {
           console.log('App page: ', props);
           return (<div style={{
@@ -68,14 +91,16 @@ class App extends React.Component {
         <Route path='/Locpicker' component={Locpicker}/>
         <Route path='/NotiTest' component={NotiTest}/>
         <Route path='/Rout' component={Rout}/>
-        <Route path='/Bx' component={Bx}/>
+        <Route path='/Bx' render={(props) => {
+          return (<Bx {...props} appCtx={this.appCtx}/>);
+        }}/>
       </div>
     </div>);
   }
 }
 
 App.propTypes = {
-  match: PropTypes.object
+  // match: PropTypes.object
 };
 
 function launch() {

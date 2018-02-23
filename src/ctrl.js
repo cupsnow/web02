@@ -1,5 +1,5 @@
-import * as Base64 from 'base64-js';
-import {TextEncoder, TextDecoder} from 'text-encoding';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 export function formatNum(num, fmt) {
   var s = num + '';
@@ -24,22 +24,14 @@ export function isCordovaApp() {
   return window && window.isCordovaApp;
 }
 
-export function str2ByteArray(str, strEnc = 'utf-8') {
-  return new TextEncoder(strEnc).encode(str);
+export class CtxComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
 }
 
-export function byteArrayToStr(arr, strEnc = 'utf-8') {
-  return new TextDecoder(strEnc).decode(arr);
-}
-
-export function b64Encode(arr) {
-  return Base64.fromByteArray(arr);
-}
-
-export function b64Decode(b64) {
-  return Base64.toByteArray(b64);
-}
-
-export function basicAuth(user, pass) {
-  return `Basic ${Base64.encode(user + ":" + pass)}`;
-}
+CtxComponent.propTypes = {
+  appCtx: PropTypes.object
+};
