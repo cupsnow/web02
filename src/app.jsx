@@ -12,6 +12,10 @@ import Rout from './rout.jsx';
 import Bx from './bx.jsx';
 import * as MQTT from 'mqtt';
 
+// const MQTT_SVR='mqtt://test.mosquitto.org/';
+const MQTT_SVR='ws://192.168.1.159:9001/';
+const MQTT_TOPIC='joelai/web2';
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -21,18 +25,44 @@ class App extends React.Component {
 
     this.appCtx = {
       mqtt: {
-        client: MQTT.connect('http://test.mosquitto.org'),
+        client: MQTT.connect(MQTT_SVR),
+        listeners: [],
+        addListener(listener) {
+          var id = Symbol();
+          this.listeners.push({
+            listener: listener,
+            id: id
+          });
+          return id;
+        },
+        rmListener(id) {
+          var cnt = 0;
+          for (let i = this.listeners.length - 1; i >= 0; i--) {
+            if (this.listeners[i].id === id) {
+              this.listeners = this.listeners.slice(i, 1);
+              cnt++;
+            }
+          }
+          return cnt;
+        },
         dispatch(topic, msg) {
           console.log(`topic: ${topic}, msg: ${msg.toString()}`);
+          this.listeners.map(item => item.listener(topic, msg));
         }
       }
     };
+
+    this.appCtx.mqtt.addListener((topic, msg) => {
+      this.setState({
+        noti: `topic: ${topic}, msg: ${msg.toString()}`
+      });
+    });
   }
 
   componentWillMount() {
     this.appCtx.mqtt.client.on('connect', () => {
       console.log('mqtt connected');
-      this.appCtx.mqtt.client.subscribe('joelai/web2');
+      this.appCtx.mqtt.client.subscribe(MQTT_TOPIC);
     });
     this.appCtx.mqtt.client.on('message', (topic, msg) => {
       this.appCtx.mqtt.dispatch(topic, msg);
@@ -75,6 +105,9 @@ class App extends React.Component {
       </div>
       <div>
         {`Recevied notification: ${this.state.noti || '<Empty>'}`}
+        <br/>
+        <input type='text' ref={elm => this.publishInput = elm}/>
+        <button onClick={() => this.appCtx.mqtt.client.publish(MQTT_TOPIC, this.publishInput.value)}>Send</button>
       </div>
       <div>
         <Route path={`/:demoPage`} render={(props) => {
