@@ -48,6 +48,7 @@
   "dependencies": {
     "base64-js": "^1.2.3",
     "cloudant": "^1.10.0-NOTICE",
+    "cordova": "^9.0.0",
     "cordova-android": "^7.0.0",
     "cordova-browser": "^5.0.3",
     "cordova-plugin-camera": "^4.0.2",

@@ -11,6 +11,7 @@ import imgWikiDrawing from './img/wiki_drawing.png';
 import Rout from './rout.jsx';
 import Bx from './bx.jsx';
 import * as MQTT from 'mqtt';
+import MathTest from './mathtest.jsx';
 
 // const MQTT_SVR='ws://test.mosquitto.org:8080/';
 const MQTT_SVR='ws://192.168.1.159:9001/';
@@ -112,6 +113,10 @@ class App extends React.Component {
         <div className='item'>
           <Link to='/Bx'>Bluemix</Link>
         </div>
+        <div className='sep'>|</div>
+        <div className='item'>
+          <Link to='/MathTest'>MathTest</Link>
+        </div>
       </div>
       <div>
         <div style={{...circleStyle,
@@ -139,6 +144,7 @@ class App extends React.Component {
         <Route path='/Bx' render={(props) => {
           return (<Bx {...props} appCtx={this.appCtx}/>);
         }}/>
+        <Route path='/MathTest' component={MathTest}/>
       </div>
     </div>);
   }

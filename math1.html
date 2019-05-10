@@ -1,20 +1,74 @@
 </<!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
     </script>
+    <!-- src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" -->
     <script type="text/javascript"
-      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+      src="./MathJax.js?config=TeX-AMS-MML_HTMLorMML">
     </script>
 
     <meta charset="utf-8">
-    <title></title>
+
+    <title>Eval math</title>
   </head>
   <body>
-    $$
-    f(t) = \cos(\omega t) \\
-    f(s)=\int_0^\infty
-    $$
+Laplace Transform: $F(s)=\int_0^\infty f(t)\mathrm{e}^{-st}\, \mathrm{d}t$
+<hr/>
+
+$
+f(t) = e^{-t}[3\cos(20 t) - 7\sin(20 t)] \\
+$
+<div id="GraphHolder"/>
+<script>
+  var graphHolder = document.getElementById("GraphHolder");
+
+  var plotData1 = {
+    x: [], y: []
+  };
+  for (i = 0; i < 4 * 100; i++) {
+    plotData1.x[i] = i / 100;
+
+    plotData1.y[i] = Math.exp(-plotData1.x[i]) *
+      (3 * Math.cos(20 * plotData1.x[i]) -
+      7 * Math.sin(20 * plotData1.x[i]));
+  }
+  Plotly.react(graphHolder,
+    [plotData1],
+    {margin: {l:20, t: 5, r: 5, b: 20}},
+    {showSendToCloud:true});
+</script>
+<hr/>
+
+$
+f(n) =
+  \begin{cases}
+    k - {\frac{k}{\pi}} & \quad \text{if } 0 < x < \pi\\
+    k + {\frac{k}{\pi}} & \quad \text{if } \mathrm{-}\pi < x < 0\\
+  \end{cases}
+$
+<div id="GraphHolder2"/>
+<script>
+  var graphHolder = document.getElementById("GraphHolder2");
+
+  var plotData1 = {
+    x: [], y: []
+  };
+  for (i = 0; i < 4 * 100; i++) {
+    plotData1.x[i] = i / 100;
+
+    plotData1.y[i] = Math.exp(-plotData1.x[i]) *
+      (3 * Math.cos(20 * plotData1.x[i]) -
+      7 * Math.sin(20 * plotData1.x[i]));
+  }
+  Plotly.react(graphHolder,
+    [plotData1],
+    {margin: {l:20, t: 5, r: 5, b: 20}},
+    {showSendToCloud:true});
+</script>
+
   </body>
 </html>
