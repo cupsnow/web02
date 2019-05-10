@@ -16,13 +16,94 @@
     <title>Eval math</title>
   </head>
   <body>
-Laplace Transform: $F(s)=\int_0^\infty f(t)\mathrm{e}^{-st}\, \mathrm{d}t$
+<div style="display:block;">
+  <div style="display:inline-block;">
+    $
+    f(n) = \begin{cases}
+      k + \frac{k}{\pi}x & \quad \text{if } \mathrm{-}\pi < x < 0\\
+      k - \frac{k}{\pi}x & \quad \text{if } 0 < x < \pi\\
+    \end{cases}
+    $
+  </div>
+  <div id="GraphHolder2" style="display:inline-block;"></div>
+</div>
+<div style="display:block;">
+  $
+  a_0 = \frac{1}{2\pi} \int_{\mathrm{-}\pi}^{\pi} f(x) \, \mathrm{d}x \\
+  \quad = \frac{1}{2\pi} [
+    \int_{\mathrm{-}\pi}^0 k + \frac{k}{\pi}x \, \mathrm{d}x +
+    \int_0^{\pi} k - \frac{k}{\pi}x \, \mathrm{d}x] \\
+  \quad = \frac{k}{2\pi} [
+    x|_{\mathrm{-}\pi}^0 + \frac{x^2}{2\pi}|_{\mathrm{-}\pi}^0 +
+    x|_0^{\pi} - \frac{x^2}{2\pi}|_0^{\pi}] \\
+  \quad = \frac{k}{2\pi} [
+    \pi - \frac{\pi}{2} + \pi - \frac{\pi}{2}] = \frac{k}{2}
+  $
+  <br/>
+  $\int \cos(nx) \mathrm{d}x = \frac{\sin(nx)}{n}$
+  <br/>
+  $\int \sin(nx) \mathrm{d}x = \frac{\cos(nx)}{\mathrm{-}n}$
+  <br/>
+  $
+  \int x\cos(nx) \mathrm{d}x = x \frac{\sin(nx)}{n} - \int \frac{\sin(nx)}{n} \mathrm{d}x
+  = x \frac{\sin(nx)}{n} + \frac{\cos(nx)}{n^2}
+  $
+  <br/>
+  $
+  \int x\sin(nx) \mathrm{d}x = x \frac{\cos(nx)}{\mathrm{-}n} - \int \frac{\cos(nx)}{\mathrm{-}n} \mathrm{d}x
+  = x \frac{\cos(nx)}{\mathrm{-}n} + \frac{\sin(nx)}{n^2}
+  $
+  <br/>
+  $
+  a_n = \frac{1}{\pi} \int_{\mathrm{-}\pi}^{\pi} f(x) \cos(nx) \, \mathrm{d}x \\
+  \quad = \frac{1}{\pi} [
+    \int_{\mathrm{-}\pi}^0 (k + \frac{k}{\pi}x) \cos(nx)\, \mathrm{d}x +
+    \int_0^{\pi} (k - \frac{k}{\pi}x)\cos(nx) \, \mathrm{d}x] \\
+  \quad = \frac{k}{\pi} [
+    \frac{\sin(nx)}{n}|_{\mathrm{-}\pi}^0 +
+    \frac{1}{\pi}(x \frac{\sin(nx)}{n} + \frac{\cos(nx)}{n^2})|_{\mathrm{-}\pi}^0 + \\
+    \quad \quad \frac{\sin(nx)}{n}|_0^{\pi} -
+    \frac{1}{\pi}(x \frac{\sin(nx)}{n} + \frac{\cos(nx)}{n^2})|_0^{\pi}] \\
+  \quad = \frac{k}{\pi^2} [
+    0 + (\frac{1}{n^2} - \frac{\cos(nx)}{n^2}) +
+    0 - (\frac{\cos(nx)}{n^2} - \frac{1}{n^2})] \\
+  \quad = \frac{2k}{(n\pi)^2}(1 - \cos(n\pi))
+  $
+</div>
+<script>
+  var graphHolder = document.getElementById("GraphHolder2");
+
+  var plotData1 = {
+    x: [], y: []
+  };
+
+  var K = 3.5;
+  var RES_PI = 2 * 100;
+
+  for (i = 0; i < RES_PI * 2; i++) {
+    plotData1.x[i] = Math.PI / RES_PI * (i - RES_PI);
+    plotData1.y[i] = plotData1.x[i] >= 0 ?
+      K - (K / Math.PI) * plotData1.x[i] :
+      K + (K / Math.PI) * plotData1.x[i];
+  }
+  graphHolder.innerHTML = `k = ${K}`;
+
+  Plotly.react(graphHolder,
+    [plotData1],
+    {
+      xaxis: {range: [-2 * Math.PI, 2 * Math.PI]},
+        margin: {l:20, t: 5, r: 5, b: 20},
+        autosize: false, width: 150, height: 90,
+    },
+    {showSendToCloud:true});
+</script>
+
 <hr/>
 
 $
 f(t) = e^{-t}[3\cos(20 t) - 7\sin(20 t)] \\
 $
-<div id="GraphHolder"/>
+<div id="GraphHolder"></div>
 <script>
   var graphHolder = document.getElementById("GraphHolder");
 
@@ -38,37 +119,15 @@ $
   }
   Plotly.react(graphHolder,
     [plotData1],
-    {margin: {l:20, t: 5, r: 5, b: 20}},
+    {
+      margin: {l:20, t: 5, r: 5, b: 20}
+    },
     {showSendToCloud:true});
 </script>
+
 <hr/>
 
-$
-f(n) =
-  \begin{cases}
-    k - {\frac{k}{\pi}} & \quad \text{if } 0 < x < \pi\\
-    k + {\frac{k}{\pi}} & \quad \text{if } \mathrm{-}\pi < x < 0\\
-  \end{cases}
-$
-<div id="GraphHolder2"/>
-<script>
-  var graphHolder = document.getElementById("GraphHolder2");
-
-  var plotData1 = {
-    x: [], y: []
-  };
-  for (i = 0; i < 4 * 100; i++) {
-    plotData1.x[i] = i / 100;
-
-    plotData1.y[i] = Math.exp(-plotData1.x[i]) *
-      (3 * Math.cos(20 * plotData1.x[i]) -
-      7 * Math.sin(20 * plotData1.x[i]));
-  }
-  Plotly.react(graphHolder,
-    [plotData1],
-    {margin: {l:20, t: 5, r: 5, b: 20}},
-    {showSendToCloud:true});
-</script>
+Laplace Transform: $F(s)=\int_0^\infty f(t)\mathrm{e}^{-st}\, \mathrm{d}t$
 
   </body>
 </html>
