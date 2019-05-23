@@ -6,9 +6,8 @@
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
     </script>
-    <!-- src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" -->
-    <script type="text/javascript"
-      src="./MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    <script type="text/javascript" async
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
     </script>
 
     <meta charset="utf-8">
@@ -16,7 +15,86 @@
     <title>Eval math</title>
   </head>
   <body>
-<div style="display:block;">
+
+Test FFT<br/>
+<div id="GraphHolder3Head"></div>
+<div id="GraphHolder3"></div>
+<br/>
+<div id="GraphHolder3DFT"></div>
+<script>
+
+  var signal = {
+    freq: 10, sample_rate: 100, phase_shift: 0,
+    sample: function(idx, _freq, _sample_rate, _phase_shift) {
+      if (_freq === undefined) _freq = this.freq;
+      if (_sample_rate === undefined) _sample_rate = this.sample_rate;
+      if (_phase_shift === undefined) _phase_shift = this.phase_shift;
+      return Math.sin(idx * 2 * Math.PI * _freq / _sample_rate + _phase_shift)
+    }
+  };
+
+  document.getElementById("GraphHolder3Head").innerHTML =
+    `freq: ${signal.freq}, sample rate: ${signal.sample_rate}<br/>`;
+
+  var plotData1 = {
+    x: [], y: []
+  };
+  plotData1.x = Array.apply(null, {length: 256}).map((val, idx) =>
+    idx / signal.sample_rate);
+  plotData1.y = plotData1.x.map((val, idx) => signal.sample(idx));
+
+  Plotly.react(document.getElementById("GraphHolder3"),
+    [plotData1],
+    {
+        margin: {l:20, t: 5, r: 5, b: 20},
+        autosize: false, width: 800, height: 200,
+    },
+    {showSendToCloud:true});
+
+  var plotDFTData = {
+    x: [], re: [], im: [], pw: [],
+    sample: function(arr, sample_rate) {
+      this.x = []; this.re = []; this.im = []; this.pw = [];
+      for (k = 0; k < arr.length; k++) {
+        this.re[k] = this.im[k] = 0;
+        for (n = 0; n < arr.length; n++) {
+          this.re[k] += arr[n] * Math.cos(2 * Math.PI * k * n / arr.length);
+          this.im[k] -= arr[n] * Math.sin(2 * Math.PI * k * n / arr.length);
+        }
+        if (sample_rate === undefined) sample_rate = arr.length;
+        if (k <= (arr.length / 2)) {
+          this.x[k] = sample_rate * k / arr.length;
+        } else {
+          this.x[k] = this.x[arr.length - k];
+        }
+        this.re[k] /= arr.length;
+        this.im[k] /= arr.length;
+        this.pw[k] = this.re[k] * this.re[k] + this.im[k] * this.im[k];
+      }
+    }
+  };
+
+  plotDFTData.sample(plotData1.y);
+  Plotly.react(document.getElementById("GraphHolder3DFT"),
+    [ // data
+      {y: plotDFTData.pw, name: "power"},
+      {y: plotDFTData.re, name: "re"},
+      {y: plotDFTData.im, name: "im"}
+    ],
+    { // layout
+        margin: {l:20, t: 5, r: 5, b: 20},
+        autosize: false, width: 800, height: 200,
+    },
+    { // config
+      showSendToCloud:true
+    });
+
+
+</script>
+
+<hr/>
+
+<div style="display:flex; flex-wrap:wrap; height:auto; align-items:center;">
   <div style="display:inline-block;">
     $
     f(n) = \begin{cases}
@@ -124,6 +202,16 @@ $
     },
     {showSendToCloud:true});
 </script>
+
+<hr/>
+
+<h3>Fourier series.</h3>
+$
+f(x) = f(\frac{L}{\pi}v) a_0 + \sum_{n=1}^\infty (a_n \cos(\frac{n \pi}{L}x) + b_n \sin(\frac{n \pi}{L}x)) \\
+a_0 = \frac{1}{2L} \int_{-L}^{L} f(x) dx \\
+a_n = \frac{1}{L} \int_{-L}^{L} f(x) \cos(\frac{n \pi}{L}x) dx \\
+b_n = \frac{1}{L} \int_{-L}^{L} f(x) \sin(\frac{n \pi}{L}x) dx \\
+$
 
 <hr/>
 
