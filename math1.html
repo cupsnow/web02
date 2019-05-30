@@ -21,11 +21,13 @@ Test FFT<br/>
 <div id="GraphHolder3"></div>
 <br/>
 <div id="GraphHolder3DFT"></div>
+<br/>
+<div id="GraphHolder3Res"></div>
 <script>
 
   var signal = {
-    freq: 10, sample_rate: 100, phase_shift: 0,
-    sample: function(idx, _freq, _sample_rate, _phase_shift) {
+    freq: 10, sample_rate: 500, phase_shift: 0,
+    gen: function(idx, _freq, _sample_rate, _phase_shift) {
       if (_freq === undefined) _freq = this.freq;
       if (_sample_rate === undefined) _sample_rate = this.sample_rate;
       if (_phase_shift === undefined) _phase_shift = this.phase_shift;
@@ -39,9 +41,9 @@ Test FFT<br/>
   var plotData1 = {
     x: [], y: []
   };
-  plotData1.x = Array.apply(null, {length: 256}).map((val, idx) =>
+  plotData1.x = Array.apply(null, {length: 1000}).map((val, idx) =>
     idx / signal.sample_rate);
-  plotData1.y = plotData1.x.map((val, idx) => signal.sample(idx));
+  plotData1.y = plotData1.x.map((val, idx) => signal.gen(idx));
 
   Plotly.react(document.getElementById("GraphHolder3"),
     [plotData1],
@@ -88,7 +90,7 @@ Test FFT<br/>
     { // config
       showSendToCloud:true
     });
-
+    var graphHolder3Res = document.getElementById("GraphHolder3Res"),
 
 </script>
 

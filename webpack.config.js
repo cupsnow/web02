@@ -108,7 +108,8 @@ if (process.env.NODE_ENV === 'production') {
       contentBase: cfg.output.path,
       watchContentBase: true,
       host: '0.0.0.0',
-      hot: true,
+      port: 8090,
+      hot: true
       // https: true
     },
     plugins: [
